@@ -18,6 +18,11 @@ app.use(morgan('dev'));
 app.use(cors());
 app.use(express.json());
 app.use(unless(authenticate, '/api/auth/login', '/api/auth/register'));
+// Sử dụng middleware Ủy quyền cho một route cụ thể
+app.get('/api/some-protected-resource', authorize, (req, res) => {
+	// Chỉ được truy cập bởi người dùng có quyền
+	res.json({ message: 'Bạn có quyền truy cập.' });
+});
 
 // Routes
 app.use('/api/auth', authRoutes);

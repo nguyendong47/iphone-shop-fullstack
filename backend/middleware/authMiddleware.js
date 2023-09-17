@@ -33,7 +33,28 @@ const unless = (middleware, ...excludedRoutes) => {
 	};
 };
 
+// Middleware Ủy quyền
+const authorize = (req, res, next) => {
+	// Kiểm tra xem người dùng đã đăng nhập hay chưa
+	if (!req.user) {
+		return res
+			.status(401)
+			.json({ message: 'Không được phép truy cập, vui lòng đăng nhập.' });
+	}
+
+	// Kiểm tra quyền truy cập của người dùng, ví dụ:
+	if (!req.user.isAdmin) {
+		return res
+			.status(403)
+			.json({ message: 'Bạn không có quyền truy cập.' });
+	}
+
+	// Nếu người dùng có quyền, cho phép truy cập
+	next();
+};
+
 module.exports = {
 	authenticate,
 	unless,
+	authorize,
 };
