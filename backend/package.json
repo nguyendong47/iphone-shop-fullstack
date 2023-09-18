@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "node src/server.js",
     "build": "babel src --out-dir dist",
     "lint": "eslint ./src/**/*.{js,jsx}",
     "lint:fix": "eslint './src/**/*.{js,jsx}' --fix",
