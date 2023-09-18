@@ -5,7 +5,11 @@ require('dotenv').config();
 const productRoutes = require('./routes/productRoutes');
 const connectDB = require('./config/database');
 const authRoutes = require('./routes/authRoutes');
-const { authenticate, unless } = require('./middleware/authMiddleware');
+const {
+	authenticate,
+	unless,
+	authorize,
+} = require('./middleware/authMiddleware');
 
 const app = express();
 const PORT = process.env.PORT || 5000;

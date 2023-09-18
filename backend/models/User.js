@@ -15,6 +15,18 @@ const userSchema = new mongoose.Schema({
 		type: String,
 		required: true,
 	},
+	emailVerificationToken: {
+		type: String,
+		required: false,
+	},
+	emailVerificationExpires: {
+		type: Date,
+		required: false,
+	},
+	emailVerified: {
+		type: Boolean,
+		default: false,
+	},
 });
 
 // Mã hóa mật khẩu trước khi lưu
