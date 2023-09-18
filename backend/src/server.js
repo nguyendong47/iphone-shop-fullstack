@@ -8,9 +8,9 @@ const authRoutes = require('./routes/authRoutes');
 const emailRoutes = require('./routes/emailRoutes');
 
 const {
-	authenticate,
-	unless,
-	authorize,
+  authenticate,
+  unless,
+  authorize,
 } = require('./middleware/authMiddleware');
 
 const app = express();
@@ -26,8 +26,8 @@ app.use(express.json());
 app.use(unless(authenticate, '/api/auth/login', '/api/auth/register'));
 // Sử dụng middleware Ủy quyền cho một route cụ thể
 app.get('/api/some-protected-resource', authorize, (req, res) => {
-	// Chỉ được truy cập bởi người dùng có quyền
-	res.json({ message: 'Bạn có quyền truy cập.' });
+  // Chỉ được truy cập bởi người dùng có quyền
+  res.json({ message: 'Bạn có quyền truy cập.' });
 });
 
 // Routes
@@ -36,15 +36,15 @@ app.use('/api/products', productRoutes);
 app.use('/api/email', emailRoutes);
 
 app.get('/', (req, res) => {
-	res.send('Welcome to iPhone Shop Backend!');
+  res.send('Welcome to iPhone Shop Backend!');
 });
 
 // Middleware xử lý lỗi
 app.use((err, req, res, next) => {
-	console.error(err.stack);
-	res.status(500).send('Something broke!');
+  console.error(err.stack);
+  res.status(500).send('Something broke!');
 });
 
 app.listen(PORT, () => {
-	console.log(`Server is running on port ${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });

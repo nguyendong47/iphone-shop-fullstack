@@ -1,15 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const {
-	register,
-	login,
-	verifyEmail,
-	forgotPassword,
-	resetPassword,
-	createUser,
-	getUsers,
-	updateUser,
-	deleteUser,
+  register,
+  login,
+  verifyEmail,
+  forgotPassword,
+  resetPassword,
+  createUser,
+  getUsers,
+  updateUser,
+  deleteUser,
 } = require('../controllers/authController');
 
 router.post('/register', register);

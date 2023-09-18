@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const {
-	sendVerificationEmail,
-	verifyEmail,
+  sendVerificationEmail,
+  verifyEmail,
 } = require('../controllers/emailController');
 
 // Route để gửi email xác thực
