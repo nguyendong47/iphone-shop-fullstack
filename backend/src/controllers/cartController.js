@@ -1,3 +1,5 @@
+const Cart = require('../models/Cart');
+
 exports.addToCart = async (req, res) => {
   try {
     const userId = req.user.id;

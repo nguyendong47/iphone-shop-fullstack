@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "build": "babel src --out-dir dist",
-    "lint": "eslint './src/**/*.{js,jsx}'",
+    "lint": "eslint ./src/**/*.{js,jsx}",
     "lint:fix": "eslint './src/**/*.{js,jsx}' --fix",
     "format": "prettier --write './src/**/*.{js,jsx,json,css}'",
     "test": "echo \"Error: no test specified\" && exit 1"

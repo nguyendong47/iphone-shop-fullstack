@@ -40,7 +40,7 @@ app.get('/', (req, res) => {
 });
 
 // Middleware xử lý lỗi
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
   console.error(err.stack);
   res.status(500).send('Something broke!');
 });

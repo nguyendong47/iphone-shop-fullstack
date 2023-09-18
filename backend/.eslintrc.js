@@ -3,14 +3,12 @@ module.exports = {
     browser: true,
     commonjs: true,
     es2021: true,
+    node: true,
   },
   extends: ['eslint:recommended', 'prettier'],
   plugins: ['prettier'],
   overrides: [
     {
-      env: {
-        node: true,
-      },
       files: ['.eslintrc.{js,cjs}'],
       parserOptions: {
         sourceType: 'script',

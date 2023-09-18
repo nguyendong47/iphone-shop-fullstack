@@ -1,7 +1,9 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const express = require('express');
+const router = express.Router();
 
 // Route để tạo phiên thanh toán
-app.post('/create-checkout-session', async (req, res) => {
+router.post('/create-checkout-session', async (req, res) => {
   const { products } = req.body; // Thông tin sản phẩm (tên, giá, số lượng, vv.)
 
   // Tạo một phiên thanh toán
@@ -27,15 +29,16 @@ app.post('/create-checkout-session', async (req, res) => {
 });
 
 // Route để xử lý phản hồi từ Stripe
-app.post('/webhook', async (req, res) => {
+router.post('/webhook', async (req, res) => {
   const event = req.body;
 
   // Xử lý sự kiện từ Stripe (thanh toán thành công, hủy đơn hàng, vv.)
   switch (event.type) {
-    case 'checkout.session.completed':
-      const session = event.data.object;
+    case 'checkout.session.completed': {
+      // const session = event.data.object;
       // Cập nhật cơ sở dữ liệu với thông tin đơn hàng (session)
       break;
+    }
     // Xử lý các sự kiện khác tùy theo yêu cầu của bạn
     default:
     // Xử lý các sự kiện khác (nếu cần)
