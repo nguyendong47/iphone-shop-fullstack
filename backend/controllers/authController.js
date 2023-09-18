@@ -2,7 +2,15 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
-const sendEmail = require('../email/sendEmail');
+const nodemailer = require('nodemailer');
+
+const transporter = nodemailer.createTransport({
+	service: 'Gmail',
+	auth: {
+		user: process.env.EMAIL,
+		pass: process.env.EMAIL_PASSWORD,
+	},
+});
 
 exports.register = async (req, res) => {
 	const { name, email, password } = req.body;
@@ -105,46 +113,28 @@ exports.verifyEmail = async (req, res) => {
 };
 
 exports.forgotPassword = async (req, res) => {
-	const { email } = req.body;
-
 	try {
-		// Tìm người dùng theo địa chỉ email
-		const user = await User.findOne({ email });
-
+		const user = await User.findOne({ email: req.body.email });
 		if (!user) {
-			return res.status(400).json({
-				message: 'Không tìm thấy người dùng với địa chỉ email này.',
-			});
+			return res.status(400).send('Email không tồn tại.');
 		}
 
-		// Tạo mã xác thực đặt lại mật khẩu
 		const resetToken = crypto.randomBytes(64).toString('hex');
-		const resetTokenExpires = Date.now() + 3600000; // Hết hạn sau 1 giờ
-
-		// Lưu mã xác thực vào cơ sở dữ liệu
-		user.resetPasswordToken = resetToken;
-		user.resetPasswordTokenExpires = resetTokenExpires;
+		user.passwordResetToken = resetToken;
+		user.passwordResetExpires = Date.now() + 1 * 60 * 60 * 1000; // 1 giờ
 		await user.save();
 
-		// Gửi email chứa liên kết đặt lại mật khẩu
-		const resetLink = `http://yourwebsite.com/reset-password/${resetToken}`;
 		const emailContent = {
-			from: 'your_email@gmail.com',
-			to: email,
-			subject: 'Đặt Lại Mật Khẩu',
-			text: `Nhấp vào liên kết sau để đặt lại mật khẩu: ${resetLink}`,
+			from: process.env.EMAIL,
+			to: user.email,
+			subject: 'Đặt lại mật khẩu',
+			text: `Nhấp vào liên kết sau để đặt lại mật khẩu: http://yourwebsite.com/reset-password/${resetToken}`,
 		};
 
-		await sendEmail(emailContent); // Sử dụng hàm sendEmail để gửi email
-
-		res.json({
-			message: 'Một email đã được gửi với hướng dẫn đặt lại mật khẩu.',
-		});
-	} catch (err) {
-		console.error(err);
-		res.status(500).json({
-			message: 'Đã xảy ra lỗi trong quá trình xử lý yêu cầu.',
-		});
+		await transporter.sendMail(emailContent);
+		res.status(200).send('Email đặt lại mật khẩu đã được gửi!');
+	} catch (error) {
+		res.status(500).send('Lỗi khi gửi email đặt lại mật khẩu.');
 	}
 };
 

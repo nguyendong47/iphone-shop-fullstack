@@ -5,6 +5,8 @@ require('dotenv').config();
 const productRoutes = require('./routes/productRoutes');
 const connectDB = require('./config/database');
 const authRoutes = require('./routes/authRoutes');
+const emailRoutes = require('./routes/emailRoutes');
+
 const {
 	authenticate,
 	unless,
@@ -31,6 +33,7 @@ app.get('/api/some-protected-resource', authorize, (req, res) => {
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
+app.use('/api/email', emailRoutes);
 
 app.get('/', (req, res) => {
 	res.send('Welcome to iPhone Shop Backend!');
