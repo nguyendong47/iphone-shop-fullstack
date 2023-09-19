@@ -6,6 +6,7 @@ const productRoutes = require('./routes/productRoutes');
 const connectDB = require('./config/database');
 const authRoutes = require('./routes/authRoutes');
 const emailRoutes = require('./routes/emailRoutes');
+const orderRoutes = require('./routes/orderRoutes');
 
 const {
   authenticate,
@@ -34,6 +35,7 @@ app.get('/api/some-protected-resource', authorize, (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/email', emailRoutes);
+app.use('/api/orders', orderRoutes);
 
 app.get('/', (req, res) => {
   res.send('Welcome to iPhone Shop Backend!');
