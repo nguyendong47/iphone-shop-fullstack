@@ -26,9 +26,27 @@ exports.getOrderById = async (req, res) => {
 
 exports.getAllOrders = async (req, res) => {
   try {
-    const orders = await Order.find()
-      .populate('user')
-      .populate('products.product');
+    let query = Order.find().populate('user').populate('products.product');
+
+    // Lọc theo trạng thái thanh toán
+    if (req.query.isPaid) {
+      query = query.where('isPaid').equals(req.query.isPaid === 'true');
+    }
+
+    // Lọc theo trạng thái giao hàng
+    if (req.query.isDelivered) {
+      query = query
+        .where('isDelivered')
+        .equals(req.query.isDelivered === 'true');
+    }
+
+    // Sắp xếp
+    if (req.query.sortBy) {
+      const order = req.query.order === 'desc' ? -1 : 1;
+      query = query.sort({ [req.query.sortBy]: order });
+    }
+
+    const orders = await query;
     res.json(orders);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching all orders', error });
