@@ -21,15 +21,22 @@ const {
 } = require('./middleware/authMiddleware');
 
 const app = express();
-const PORT = process.env.PORT || 5000;
-
-// Connect to the database
-connectDB().catch(console.dir);
 
 // Middleware setup
 app.use(morgan('dev'));
 app.use(cors());
 app.use(express.json());
+
+// Connect to the database
+(async () => {
+  try {
+    await connectDB();
+    console.log('Connected to the database');
+  } catch (error) {
+    console.error('Error connecting to the database:', error);
+    process.exit(1);
+  }
+})();
 
 // Authentication middleware for specific routes
 app.use(
@@ -61,10 +68,10 @@ app.get('/', (req, res) => {
 // Error handling middleware
 app.use((err, req, res) => {
   console.error(err.stack);
-  res.status(500).send('Something broke!');
+  res.status(err.status || 500).send(err.message || 'Something broke!');
 });
 
-// Start the server
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
