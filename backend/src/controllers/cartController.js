@@ -54,3 +54,88 @@ exports.getCart = async (req, res) => {
     });
   }
 };
+
+exports.updateCart = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { productId, quantity } = req.body;
+
+    const cart = await Cart.findOne({ user: userId });
+    if (!cart) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'Cart not found.',
+      });
+    }
+
+    const productIndex = cart.products.findIndex(
+      (p) => p.product.toString() === productId,
+    );
+    if (productIndex === -1) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'Product not found in cart.',
+      });
+    }
+
+    // Validate quantity
+    if (quantity <= 0) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Invalid quantity.',
+      });
+    }
+
+    cart.products[productIndex].quantity = quantity;
+    await cart.save();
+
+    res.status(200).json({
+      status: 'success',
+      data: cart,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      message: 'Error updating cart.',
+    });
+  }
+};
+
+exports.removeFromCart = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { productId } = req.body;
+
+    const cart = await Cart.findOne({ user: userId });
+    if (!cart) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'Cart not found.',
+      });
+    }
+
+    const productIndex = cart.products.findIndex(
+      (p) => p.product.toString() === productId,
+    );
+    if (productIndex === -1) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'Product not found in cart.',
+      });
+    }
+
+    // Remove product from cart
+    cart.products.splice(productIndex, 1);
+    await cart.save();
+
+    res.status(200).json({
+      status: 'success',
+      data: cart,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      message: 'Error removing product from cart.',
+    });
+  }
+};
