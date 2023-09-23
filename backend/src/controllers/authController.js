@@ -12,6 +12,16 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+const generateToken = (user) => {
+  return jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    expiresIn: '30d',
+  });
+};
+
+const sendErrorResponse = (res, statusCode, message) => {
+  return res.status(statusCode).json({ error: message });
+};
+
 exports.register = async (req, res) => {
   const { name, email, password } = req.body;
 
@@ -19,7 +29,7 @@ exports.register = async (req, res) => {
     const userExists = await User.findOne({ email });
 
     if (userExists) {
-      return res.status(400).json({ error: 'Email already exists' });
+      return sendErrorResponse(res, 400, 'Email already exists');
     }
 
     const user = new User({
@@ -30,9 +40,7 @@ exports.register = async (req, res) => {
 
     await user.save();
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: '30d',
-    });
+    const token = generateToken(user);
 
     res.json({
       token,
@@ -43,7 +51,7 @@ exports.register = async (req, res) => {
       },
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    sendErrorResponse(res, 500, err.message);
   }
 };
 
@@ -53,19 +61,11 @@ exports.login = async (req, res) => {
   try {
     const user = await User.findOne({ email });
 
-    if (!user) {
-      return res.status(400).json({ error: 'Invalid email or password' });
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      return sendErrorResponse(res, 400, 'Invalid email or password');
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
-
-    if (!isMatch) {
-      return res.status(400).json({ error: 'Invalid email or password' });
-    }
-
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: '30d',
-    });
+    const token = generateToken(user);
 
     res.json({
       token,
@@ -76,7 +76,7 @@ exports.login = async (req, res) => {
       },
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    sendErrorResponse(res, 500, err.message);
   }
 };
 

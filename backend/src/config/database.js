@@ -1,7 +1,10 @@
 const mongoose = require('mongoose');
 require('dotenv').config();
 
-const connectDB = async () => {
+const MAX_RETRIES = 3;
+const RETRY_INTERVAL = 5000; // 5 seconds
+
+const connectDB = async (retries = MAX_RETRIES) => {
   try {
     await mongoose.connect(process.env.MONGODB_URI, {
       useNewUrlParser: true,
@@ -9,8 +12,20 @@ const connectDB = async () => {
     });
     console.log('MongoDB connected successfully.');
   } catch (error) {
-    console.error('Error connecting to MongoDB:', error.message);
-    process.exit(1);
+    if (retries > 0) {
+      console.error(
+        `Error connecting to MongoDB. Retrying in ${
+          RETRY_INTERVAL / 1000
+        } seconds...`,
+      );
+      setTimeout(() => connectDB(retries - 1), RETRY_INTERVAL);
+    } else {
+      console.error(
+        'Failed to connect to MongoDB after multiple attempts:',
+        error.message,
+      );
+      process.exit(1);
+    }
   }
 };
 
